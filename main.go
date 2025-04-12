@@ -212,30 +212,43 @@ func handlePlayerMovement(w draw.Window) {
 }
 
 func updatePhysics() {
-	// We loop bottom to top so rocks don’t fall through each other in one frame
-	for y := gridHeight - 2; y >= 0; y-- {
+	// Process bottom-up
+	for y := gridHeight - 2; y >= 1; y-- {
 		for x := 1; x < gridWidth-1; x++ {
-			if tileMap[y][x] == TileRock && tileMap[y+1][x] == TileEmpty {
-				// Move rock down
-				tileMap[y][x] = TileEmpty
-				tileMap[y+1][x] = TileRock
+			tile := tileMap[y][x]
+			if tile != TileRock && tile != TileGem {
+				continue
 			}
-			if tileMap[y][x] == TileGem && tileMap[y+1][x] == TileEmpty {
-				// Move gem down
+
+			// FALL STRAIGHT
+			if tileMap[y+1][x] == TileEmpty {
+				tileMap[y+1][x] = tile
 				tileMap[y][x] = TileEmpty
-				tileMap[y+1][x] = TileGem
+				continue
+			}
+
+			// ROLL RIGHT
+			if (tileMap[y+1][x] == TileRock || tileMap[y+1][x] == TileGem) &&
+				tileMap[y][x+1] == TileEmpty &&
+				tileMap[y+1][x+1] == TileEmpty {
+				tileMap[y+1][x+1] = tile
+				tileMap[y][x] = TileEmpty
+				continue
+			}
+
+			// ROLL LEFT
+			if (tileMap[y+1][x] == TileRock || tileMap[y+1][x] == TileGem) &&
+				tileMap[y][x-1] == TileEmpty &&
+				tileMap[y+1][x-1] == TileEmpty {
+				tileMap[y+1][x-1] = tile
+				tileMap[y][x] = TileEmpty
+				continue
 			}
 		}
 	}
 }
 
 func main() {
-	// Fill the tile grid with random tile indices
-	// tileTypes := []Tile{
-	// 	TileEmpty, TileDirt, TileBrickWall, TileStoneWall,
-	// 	TileRock, TileGem, TileClosedExit, TilePlayer,
-	// }
-
 	windowWidth := gridWidth * tileDrawSize
 	windowHeight := gridHeight * tileDrawSize
 
