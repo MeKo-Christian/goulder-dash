@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"strconv"
 
 	"github.com/gonutz/prototype/draw"
 )
@@ -65,6 +66,7 @@ var playerX, playerY int
 var playerDirection = FacingDown
 
 var frameCounter int
+var gemCounter int
 
 var tileIndices [gridHeight][gridWidth]int
 var tileMap [gridHeight][gridWidth]Tile
@@ -204,6 +206,10 @@ func handlePlayerMovement(w draw.Window) {
 		}
 	}
 
+	if target == TileGem {
+		gemCounter++
+	}
+
 	// Move player
 	tileMap[playerY][playerX] = TileEmpty
 	playerX = newX
@@ -287,17 +293,21 @@ func main() {
 				sx := (spriteIndex % tileCols) * tileSize
 				sy := (spriteIndex / tileCols) * tileSize
 
+				// Draw the tile
 				err := w.DrawImageFilePart(
 					spriteSheet,
 					sx, sy, tileSize, tileSize,
 					x*tileDrawSize, y*tileDrawSize, tileDrawSize, tileDrawSize,
 					0,
 				)
-
 				if err != nil {
 					w.DrawText("Failed to load sprite!", 10, 10, draw.Red)
 				}
 			}
 		}
+
+		// Draw the gem counter
+		text := "Level 1 - Gems: " + strconv.Itoa(gemCounter) + " / 20"
+		w.DrawText(text, 8, 8, draw.White)
 	})
 }
