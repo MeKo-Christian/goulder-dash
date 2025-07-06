@@ -64,6 +64,13 @@ var TileSpriteIndex = map[Tile]int{
 	TileExplosion5: 5 + 4*TileCols,
 }
 
+type Enemy struct {
+	X, Y      int
+	Type      Tile
+	Direction Direction
+	MoveTimer int
+}
+
 var (
 	WindowWidth  = GridWidth * TileDrawSize
 	WindowHeight = GridHeight * TileDrawSize
