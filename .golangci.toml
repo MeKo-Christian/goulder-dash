@@ -62,7 +62,8 @@ presets = [
 paths = [
   'third_party$',
   'builtin$',
-  'examples$'
+  'examples$',
+  '.*gonutz/prototype/draw.*'
 ]
 
 [[linters.exclusions.rules]]
