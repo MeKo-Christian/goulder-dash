@@ -32,6 +32,7 @@ func createGeneratedLevel(name string, seed int64, rockCount, gemCount, enemyCou
 	r := rand.New(rand.NewSource(seed))
 	placeRandomTiles(&grid, r, TileRock, rockCount)
 	placeRandomTiles(&grid, r, TileGem, gemCount)
+
 	if enemyCount > 0 {
 		placeEnemiesWithSpace(&grid, r, TileEnemy1, enemyCount)
 	}
@@ -76,6 +77,7 @@ func placeEnemiesWithSpace(level *[GridHeight][GridWidth]Tile, r *rand.Rand, til
 
 		// Check if we can clear space around the enemy
 		canPlace := true
+
 		for dy := -1; dy <= 1; dy++ {
 			for dx := -1; dx <= 1; dx++ {
 				checkX, checkY := x+dx, y+dy
@@ -90,6 +92,7 @@ func placeEnemiesWithSpace(level *[GridHeight][GridWidth]Tile, r *rand.Rand, til
 					break
 				}
 			}
+
 			if !canPlace {
 				break
 			}
@@ -127,6 +130,7 @@ func resetLevel(n int) {
 
 	// Initialize enemies from tilemap
 	enemies = nil
+
 	for y := range GridHeight {
 		for x := range GridWidth {
 			if tileMap[y][x] == TileEnemy1 {

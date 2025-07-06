@@ -6,5 +6,8 @@ import (
 )
 
 func main() {
-	draw.RunWindow("Goulder Dash", game.WindowWidth, game.WindowHeight, game.Update)
+	err := draw.RunWindow("Goulder Dash", game.WindowWidth, game.WindowHeight, game.Update)
+	if err != nil {
+		panic(err)
+	}
 }

@@ -1,64 +1,120 @@
-[issues]
-[[issues.exclude-rules]]
-# no longer a problem in go 1.22
-linters = ["gosec"]
-text = "G601:"
-
-[[issues.exclude-rules]]
-# safe to ignore
-linters = ["errcheck"]
-text = "viper.Bind"
-
-[[issues.exclude-rules]]
-# not a magic number
-linters = ["mnd"]
-source = "cobra.MinimumNArgs"
-
-[[issues.exclude-rules]]
-# idiomatic viper usage
-path = "cmd/.*\\.go"
-linters = ["gochecknoinits", "gochecknoglobals"]
-
-[[issues.exclude-rules]]
-# errors are not consumed
-path = "cmd/.*\\.go"
-linters = ["err113", "goerr113", "wrapcheck"]
-
-[[issues.exclude-rules]]
-# because I'm too lazy to fix it
-path = "internal/.*\\.go"
-linters = ["gosec", "varnamelen", "forbidigo", "godot"]
-
-[severity]
-default-severity = "warn"
-
-[[severity.rules]]
-# NOTE: these are disabled in the justfile
-linters = ["exhaustruct", "exhaustive", "godox"]
-severity = "info"
+version = '2'
 
 [linters]
-# enable all by default and remove those which we do not find useful
-enable-all = true
+default = 'all'
 disable = [
-  "sqlclosecheck", # broken
-  "musttag",       # broken
-  "gofmt",         # included by gofumpt
-  "nlreturn",      # included by wsl
-  "depguard",      # too restrictive
-  "ireturn",       # too restrictive
-  "exportloopref", # deprecated
-  "gofumpt"        # handled by formatter
+  'depguard',
+  'ireturn',
+  'musttag',
+  'nlreturn',
+  'sqlclosecheck'
 ]
 
-[linters-settings.wsl]
-allow-cuddle-declarations = true
+[linters.settings]
+[linters.settings.tagliatelle]
+[linters.settings.tagliatelle.case]
+[linters.settings.tagliatelle.case.rules]
+envconfig = 'upperSnake'
+json = 'snake'
+
+[linters.settings.varnamelen]
+ignore-names = [
+  'rx',
+  'tx',
+  'db',
+  'ok',
+  'mw',
+  'gw',
+  'rt',
+  'id',
+  'mx'
+]
+ignore-decls = [
+  'w http.ResponseWriter',
+  'r *http.Request',
+  'g *Gateway'
+]
+
+[linters.settings.wsl]
 allow-trailing-comment = true
+allow-cuddle-declarations = true
 
-[linters-settings.varnamelen]
-ignore-names = ["rx", "tx", "db", "ok", "mw", "gw", "rt", "id", "mx"]
-ignore-decls = ["w http.ResponseWriter", "r *http.Request", "g *Gateway"]
+[linters.exclusions]
+generated = 'lax'
+presets = [
+  'comments',
+  'common-false-positives',
+  'legacy',
+  'std-error-handling'
+]
+paths = [
+  'third_party$',
+  'builtin$',
+  'examples$'
+]
 
-[linters-settings.tagliatelle.case.rules]
-json = "snake"
-envconfig = "upperSnake"
+[[linters.exclusions.rules]]
+linters = [
+  'gosec'
+]
+text = 'G601:'
+
+[[linters.exclusions.rules]]
+linters = [
+  'errcheck'
+]
+text = 'viper.Bind'
+
+[[linters.exclusions.rules]]
+linters = [
+  'mnd'
+]
+source = 'cobra.MinimumNArgs'
+
+[[linters.exclusions.rules]]
+linters = [
+  'gochecknoglobals',
+  'gochecknoinits'
+]
+path = 'cmd/.*\.go'
+
+[[linters.exclusions.rules]]
+linters = [
+  'err113',
+  'wrapcheck'
+]
+path = 'cmd/.*\.go'
+
+[[linters.exclusions.rules]]
+linters = [
+  'forbidigo',
+  'godot',
+  'gosec',
+  'varnamelen'
+]
+path = 'internal/.*\.go'
+
+[severity]
+default = 'warn'
+
+[[severity.rules]]
+linters = [
+  'exhaustive',
+  'exhaustruct',
+  'godox'
+]
+severity = 'info'
+
+[formatters]
+enable = [
+  'gci',
+  'goimports'
+]
+
+[formatters.exclusions]
+generated = 'lax'
+paths = [
+  'third_party$',
+  'builtin$',
+  'examples$'
+]

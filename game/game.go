@@ -29,7 +29,7 @@ var (
 func init() {
 	currentLevel = levels[0]
 	tileMap = currentLevel.Grid
-	
+
 	// Initialize enemies for the first level
 	enemies = nil
 	for y := range GridHeight {
@@ -51,6 +51,7 @@ func loadNextLevel() {
 	if currentLevelIndex >= len(levels) {
 		currentLevelIndex = 0
 	}
+
 	resetLevel(currentLevelIndex)
 }
 
@@ -175,6 +176,7 @@ func canEnemyMoveTo(x, y int) bool {
 		return false
 	}
 	tile := tileMap[y][x]
+
 	return tile == TileEmpty || tile == TilePlayer
 }
 
@@ -189,6 +191,7 @@ func getDirectionOffset(dir Direction) (int, int) {
 	case FacingUp:
 		return 0, -1
 	}
+
 	return 0, 0
 }
 
@@ -203,20 +206,7 @@ func turnClockwise(dir Direction) Direction {
 	case FacingUp:
 		return FacingRight
 	}
-	return FacingRight
-}
 
-func turnCounterClockwise(dir Direction) Direction {
-	switch dir {
-	case FacingRight:
-		return FacingUp
-	case FacingUp:
-		return FacingLeft
-	case FacingLeft:
-		return FacingDown
-	case FacingDown:
-		return FacingRight
-	}
 	return FacingRight
 }
 
@@ -238,11 +228,13 @@ func updateEnemies() {
 					// Move forward
 					enemy.Direction = dir
 					moveEnemy(enemy)
+
 					break
 				}
 				dir = turnClockwise(dir)
 			}
 		}
+
 		enemy.MoveTimer = 8 // Move every 8 frames
 	}
 }
@@ -287,8 +279,8 @@ func freeSurroundingBlocks(centerX, centerY int) {
 	// Define the 8 surrounding positions
 	offsets := [][]int{
 		{-1, -1}, {0, -1}, {1, -1}, // left up, up, right up
-		{-1, 0}, {1, 0},            // left, right
-		{-1, 1}, {0, 1}, {1, 1},    // left down, down, right down
+		{-1, 0}, {1, 0}, // left, right
+		{-1, 1}, {0, 1}, {1, 1}, // left down, down, right down
 	}
 
 	for _, offset := range offsets {
@@ -311,8 +303,8 @@ func createSurroundingDiamonds(centerX, centerY int) {
 	// Define the 8 surrounding positions
 	offsets := [][]int{
 		{-1, -1}, {0, -1}, {1, -1}, // left up, up, right up
-		{-1, 0}, {1, 0},            // left, right
-		{-1, 1}, {0, 1}, {1, 1},    // left down, down, right down
+		{-1, 0}, {1, 0}, // left, right
+		{-1, 1}, {0, 1}, {1, 1}, // left down, down, right down
 	}
 
 	for _, offset := range offsets {
@@ -346,6 +338,7 @@ func updatePhysics() {
 			if tileMap[y+1][x] == TileEmpty {
 				tileMap[y+1][x] = tile
 				tileMap[y][x] = TileEmpty
+
 				continue
 			}
 
@@ -355,6 +348,7 @@ func updatePhysics() {
 				tileMap[y+1][x+1] == TileEmpty {
 				tileMap[y+1][x+1] = tile
 				tileMap[y][x] = TileEmpty
+
 				continue
 			}
 
@@ -364,6 +358,7 @@ func updatePhysics() {
 				tileMap[y+1][x-1] == TileEmpty {
 				tileMap[y+1][x-1] = tile
 				tileMap[y][x] = TileEmpty
+
 				continue
 			}
 
@@ -385,7 +380,7 @@ func updatePhysics() {
 						break
 					}
 				}
-				
+
 				if tile == TileRock {
 					// Rock falling on enemy: free surrounding blocks (except hard walls)
 					freeSurroundingBlocks(x, y+1)
