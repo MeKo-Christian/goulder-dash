@@ -1,0 +1,57 @@
+name: Deploy WASM to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    name: Build WASM and deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Build WASM
+        run: |
+          mkdir -p dist
+          GOOS=js GOARCH=wasm go build -o dist/main.wasm
+
+      - name: Update WASM in gh-pages branch
+        run: |
+          # Configure git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Fetch gh-pages branch
+          git fetch origin gh-pages
+          
+          # Switch to gh-pages branch
+          git checkout gh-pages
+          
+          # Copy the built WASM file
+          cp dist/main.wasm .
+          
+          # Add and commit the change
+          git add main.wasm
+          git commit -m "Update main.wasm from ${{ github.sha }}"
+          
+          # Push the change
+          git push origin gh-pages
