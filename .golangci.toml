@@ -7,8 +7,14 @@ disable = [
   'ireturn',
   'musttag',
   'nlreturn',
-  'sqlclosecheck'
+  'sqlclosecheck',
+  'mnd',
+  'wsl',
+  'gosec',
+  'gochecknoglobals',
+  'gochecknoinits'
 ]
+enable = ['wsl_v5']
 
 [linters.settings]
 [linters.settings.tagliatelle]
@@ -27,7 +33,11 @@ ignore-names = [
   'gw',
   'rt',
   'id',
-  'mx'
+  'mx',
+  'x',
+  'y',
+  'dx',
+  'dy'
 ]
 ignore-decls = [
   'w http.ResponseWriter',
@@ -35,9 +45,11 @@ ignore-decls = [
   'g *Gateway'
 ]
 
-[linters.settings.wsl]
-allow-trailing-comment = true
-allow-cuddle-declarations = true
+[linters.settings.wsl_v5]
+allow-first-in-block = true
+allow-whole-block = false
+branch-max-lines = 2
+disable = ['decl']
 
 [linters.exclusions]
 generated = 'lax'

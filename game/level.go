@@ -16,8 +16,8 @@ type LevelData struct {
 func createGeneratedLevel(name string, seed int64, rockCount, gemCount, enemyCount int) LevelData {
 	var grid [GridHeight][GridWidth]Tile
 
-	for y := 0; y < GridHeight; y++ {
-		for x := 0; x < GridWidth; x++ {
+	for y := range GridHeight {
+		for x := range GridWidth {
 			if y == 0 || y == GridHeight-1 || x == 0 || x == GridWidth-1 {
 				grid[y][x] = TileStoneWall
 			} else {
@@ -60,62 +60,72 @@ func placeRandomTiles(level *[GridHeight][GridWidth]Tile, r *rand.Rand, tile Til
 	}
 }
 
-func placeEnemiesWithSpace(level *[GridHeight][GridWidth]Tile, r *rand.Rand, tile Tile, count int) {
+func placeEnemiesWithSpace(level *[GridHeight][GridWidth]Tile, randGen *rand.Rand, tile Tile, count int) {
 	placed := 0
 	attempts := 0
 	maxAttempts := count * 50 // Prevent infinite loops
 
 	for placed < count && attempts < maxAttempts {
 		attempts++
-		x := r.Intn(GridWidth-4) + 2 // Leave room for clearing space
-		y := r.Intn(GridHeight-4) + 2
+		x := randGen.Intn(GridWidth-4) + 2 // Leave room for clearing space
+		y := randGen.Intn(GridHeight-4) + 2
 
-		// Check if enemy position is available
-		if level[y][x] != TileDirt {
-			continue
-		}
-
-		// Check if we can clear space around the enemy
-		canPlace := true
-
-		for dy := -1; dy <= 1; dy++ {
-			for dx := -1; dx <= 1; dx++ {
-				checkX, checkY := x+dx, y+dy
-				if checkX < 1 || checkX >= GridWidth-1 || checkY < 1 || checkY >= GridHeight-1 {
-					canPlace = false
-					break
-				}
-				// Don't place if there are walls or player/exit nearby
-				if level[checkY][checkX] == TileBrickWall || level[checkY][checkX] == TileStoneWall ||
-					level[checkY][checkX] == TilePlayer || level[checkY][checkX] == TileClosedExit {
-					canPlace = false
-					break
-				}
-			}
-
-			if !canPlace {
-				break
-			}
-		}
-
-		// check if two above the position is empty
-		if canPlace && y > 1 && level[y-2][x] != TileDirt || level[y-2][x] == TileRock {
-			canPlace = false
-		}
-
-		if canPlace {
-			// Place enemy
+		if canPlaceEnemyAt(level, x, y) {
 			level[y][x] = tile
+			clearSpaceAroundEnemy(level, x, y)
 
-			// Clear space around enemy (convert dirt to empty in a cross pattern)
-			directions := [][]int{{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}, {-1, 0}}
-			for _, dir := range directions {
-				nx, ny := x+dir[0], y+dir[1]
-				if level[ny][nx] != TileBrickWall {
-					level[ny][nx] = TileEmpty
-				}
-			}
 			placed++
+		}
+	}
+}
+
+func canPlaceEnemyAt(level *[GridHeight][GridWidth]Tile, x, y int) bool {
+	// Check if enemy position is available
+	if level[y][x] != TileDirt {
+		return false
+	}
+
+	// Check if we can clear space around the enemy
+	if !canClearSpaceAround(level, x, y) {
+		return false
+	}
+
+	// Check if two above the position is empty
+	if y > 1 && (level[y-2][x] != TileDirt || level[y-2][x] == TileRock) {
+		return false
+	}
+
+	return true
+}
+
+func canClearSpaceAround(level *[GridHeight][GridWidth]Tile, x, y int) bool {
+	for dy := -1; dy <= 1; dy++ {
+		for dx := -1; dx <= 1; dx++ {
+			checkX, checkY := x+dx, y+dy
+			if !isValidPosition(checkX, checkY) || isBlockingTile(level[checkY][checkX]) {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+func isValidPosition(x, y int) bool {
+	return x >= 1 && x < GridWidth-1 && y >= 1 && y < GridHeight-1
+}
+
+func isBlockingTile(tile Tile) bool {
+	return tile == TileBrickWall || tile == TileStoneWall ||
+		tile == TilePlayer || tile == TileClosedExit
+}
+
+func clearSpaceAroundEnemy(level *[GridHeight][GridWidth]Tile, x, y int) {
+	directions := [][]int{{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}, {-1, 0}}
+	for _, dir := range directions {
+		nx, ny := x+dir[0], y+dir[1]
+		if level[ny][nx] != TileBrickWall {
+			level[ny][nx] = TileEmpty
 		}
 	}
 }

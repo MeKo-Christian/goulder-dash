@@ -32,6 +32,7 @@ func init() {
 
 	// Initialize enemies for the first level
 	enemies = nil
+
 	for y := range GridHeight {
 		for x := range GridWidth {
 			if tileMap[y][x] == TileEnemy1 {
@@ -55,24 +56,24 @@ func loadNextLevel() {
 	resetLevel(currentLevelIndex)
 }
 
-func handlePlayerMovement(w draw.Window) {
+func handlePlayerMovement(window draw.Window) {
 	dx, dy := 0, 0
 	moved := false
-	rockMoved := false
 
-	if w.WasKeyPressed(draw.KeyLeft) {
+	switch {
+	case window.WasKeyPressed(draw.KeyLeft):
 		dx = -1
 		playerDirection = FacingLeft
 		moved = true
-	} else if w.WasKeyPressed(draw.KeyRight) {
+	case window.WasKeyPressed(draw.KeyRight):
 		dx = 1
 		playerDirection = FacingRight
 		moved = true
-	} else if w.WasKeyPressed(draw.KeyUp) {
+	case window.WasKeyPressed(draw.KeyUp):
 		dy = -1
 		playerDirection = FacingUp
 		moved = true
-	} else if w.WasKeyPressed(draw.KeyDown) {
+	case window.WasKeyPressed(draw.KeyDown):
 		dy = 1
 		playerDirection = FacingDown
 		moved = true
@@ -86,16 +87,45 @@ func handlePlayerMovement(w draw.Window) {
 	newY := playerY + dy
 	target := tileMap[newY][newX]
 
+	if !canPlayerMoveTo(target, newX, newY, dx, dy) {
+		return
+	}
+
+	movePlayerTo(newX, newY, target, dx, dy)
+}
+
+func canPlayerMoveTo(target Tile, newX, newY, dx, dy int) bool {
 	// Walls are always blocked
 	if target == TileBrickWall || target == TileStoneWall {
-		return
+		return false
 	}
 
 	// Prevent entry into closed exit
 	if target == TileClosedExit {
-		return
+		return false
 	}
 
+	// Handle pushing rock
+	if target == TileRock {
+		return canPushRock(newX, newY, dx, dy)
+	}
+
+	return true
+}
+
+func canPushRock(newX, newY, dx, dy int) bool {
+	// Only allow horizontal pushing
+	if dy != 0 {
+		return false
+	}
+
+	pushX := newX + dx
+	pushY := newY
+
+	return tileMap[pushY][pushX] == TileEmpty
+}
+
+func movePlayerTo(newX, newY int, target Tile, dx, _ int) {
 	// Transition if player enters open exit
 	if target == TileOpenExit {
 		loadNextLevel()
@@ -109,44 +139,9 @@ func handlePlayerMovement(w draw.Window) {
 		return
 	}
 
-	// Handle pushing rock
-	if target == TileRock {
-		// Only allow horizontal pushing
-		if dy != 0 {
-			return
-		}
-
-		pushX := newX + dx
-		pushY := newY
-
-		if tileMap[pushY][pushX] == TileEmpty {
-			// Move rock
-			tileMap[pushY][pushX] = TileRock
-			tileMap[newY][newX] = TileEmpty
-			rockMoved = true
-		} else {
-			// Can't push if not empty behind
-			return
-		}
-	}
-
-	// Check for gem
-	if target == TileGem {
-		collectGem()
-	}
-
-	// Reset on each move
-	playerHoldsFallingObject = false
-
-	// Check for support case
-	if tileMap[newY][newX] == TileDirt || tileMap[newY][newX] == TileGem || rockMoved {
-		if newY > 0 {
-			above := tileMap[newY-1][newX]
-			if above == TileRock || above == TileGem {
-				playerHoldsFallingObject = true
-			}
-		}
-	}
+	rockMoved := handleRockPushing(newX, newY, dx, target)
+	handleGemCollection(target)
+	updatePlayerSupport(newX, newY, target, rockMoved)
 
 	// Move player
 	tileMap[playerY][playerX] = TileEmpty
@@ -155,14 +150,50 @@ func handlePlayerMovement(w draw.Window) {
 	tileMap[playerY][playerX] = TilePlayer
 }
 
+func handleRockPushing(newX, newY, dx int, target Tile) bool {
+	if target != TileRock {
+		return false
+	}
+
+	pushX := newX + dx
+	pushY := newY
+
+	// Move rock
+	tileMap[pushY][pushX] = TileRock
+	tileMap[newY][newX] = TileEmpty
+
+	return true
+}
+
+func handleGemCollection(target Tile) {
+	if target == TileGem {
+		collectGem()
+	}
+}
+
+func updatePlayerSupport(newX, newY int, target Tile, rockMoved bool) {
+	// Reset on each move
+	playerHoldsFallingObject = false
+
+	// Check for support case
+	if target == TileDirt || target == TileGem || rockMoved {
+		if newY > 0 {
+			above := tileMap[newY-1][newX]
+			if above == TileRock || above == TileGem {
+				playerHoldsFallingObject = true
+			}
+		}
+	}
+}
+
 func collectGem() {
 	gemCounter++
 
 	// Check if all gems collected
 	if gemCounter >= currentLevel.GemTarget {
 		// Open the exit
-		for y := 0; y < GridHeight; y++ {
-			for x := 0; x < GridWidth; x++ {
+		for y := range GridHeight {
+			for x := range GridWidth {
 				if tileMap[y][x] == TileClosedExit {
 					tileMap[y][x] = TileOpenExit
 				}
@@ -175,6 +206,7 @@ func canEnemyMoveTo(x, y int) bool {
 	if x < 0 || x >= GridWidth || y < 0 || y >= GridHeight {
 		return false
 	}
+
 	tile := tileMap[y][x]
 
 	return tile == TileEmpty || tile == TilePlayer
@@ -231,6 +263,7 @@ func updateEnemies() {
 
 					break
 				}
+
 				dir = turnClockwise(dir)
 			}
 		}
@@ -260,8 +293,8 @@ func moveEnemy(enemy *Enemy) {
 }
 
 func updateExplosions() {
-	for y := 0; y < GridHeight; y++ {
-		for x := 0; x < GridWidth; x++ {
+	for y := range GridHeight {
+		for x := range GridWidth {
 			tile := tileMap[y][x]
 
 			if tile >= TileExplosion0 && tile < TileExplosion5 {
@@ -278,9 +311,9 @@ func updateExplosions() {
 func freeSurroundingBlocks(centerX, centerY int) {
 	// Define the 8 surrounding positions
 	offsets := [][]int{
-		{-1, -1}, {0, -1}, {1, -1}, // left up, up, right up
-		{-1, 0}, {1, 0}, // left, right
-		{-1, 1}, {0, 1}, {1, 1}, // left down, down, right down
+		{-1, -1}, {0, -1}, {1, -1},
+		{-1, 0}, {1, 0},
+		{-1, 1}, {0, 1}, {1, 1},
 	}
 
 	for _, offset := range offsets {
@@ -302,9 +335,9 @@ func freeSurroundingBlocks(centerX, centerY int) {
 func createSurroundingDiamonds(centerX, centerY int) {
 	// Define the 8 surrounding positions
 	offsets := [][]int{
-		{-1, -1}, {0, -1}, {1, -1}, // left up, up, right up
-		{-1, 0}, {1, 0}, // left, right
-		{-1, 1}, {0, 1}, {1, 1}, // left down, down, right down
+		{-1, -1}, {0, -1}, {1, -1},
+		{-1, 0}, {1, 0},
+		{-1, 1}, {0, 1}, {1, 1},
 	}
 
 	for _, offset := range offsets {
@@ -334,89 +367,98 @@ func updatePhysics() {
 				continue
 			}
 
-			// FALL STRAIGHT
-			if tileMap[y+1][x] == TileEmpty {
-				tileMap[y+1][x] = tile
-				tileMap[y][x] = TileEmpty
-
-				continue
-			}
-
-			// ROLL RIGHT
-			if (tileMap[y+1][x] == TileRock || tileMap[y+1][x] == TileGem) &&
-				tileMap[y][x+1] == TileEmpty &&
-				tileMap[y+1][x+1] == TileEmpty {
-				tileMap[y+1][x+1] = tile
-				tileMap[y][x] = TileEmpty
-
-				continue
-			}
-
-			// ROLL LEFT
-			if (tileMap[y+1][x] == TileRock || tileMap[y+1][x] == TileGem) &&
-				tileMap[y][x-1] == TileEmpty &&
-				tileMap[y+1][x-1] == TileEmpty {
-				tileMap[y+1][x-1] = tile
-				tileMap[y][x] = TileEmpty
-
-				continue
-			}
-
-			// FALL ON PLAYER
-			if tileMap[y+1][x] == TilePlayer {
-				if !playerHoldsFallingObject {
-					// Player dies
-					tileMap[y+1][x] = TileExplosion0
-					tileMap[y][x] = TileEmpty
-				}
-			}
-
-			// FALL ON ENEMY
-			if tileMap[y+1][x] == TileEnemy1 || tileMap[y+1][x] == TileEnemy2 || tileMap[y+1][x] == TileEnemy3 {
-				// Remove enemy from list
-				for i, enemy := range enemies {
-					if enemy.X == x && enemy.Y == y+1 {
-						enemies = append(enemies[:i], enemies[i+1:]...)
-						break
-					}
-				}
-
-				if tile == TileRock {
-					// Rock falling on enemy: free surrounding blocks (except hard walls)
-					freeSurroundingBlocks(x, y+1)
-					tileMap[y+1][x] = TileEmpty
-					tileMap[y][x] = TileEmpty
-				} else if tile == TileGem {
-					// Gem falling on enemy: kill enemy and create diamonds in surrounding blocks
-					createSurroundingDiamonds(x, y+1)
-					tileMap[y+1][x] = TileGem
-					tileMap[y][x] = TileEmpty
-				}
-			}
+			handleFallingObject(x, y, tile)
 		}
 	}
 }
 
-func Update(w draw.Window) {
-	w.BlurImages(true)
+func handleFallingObject(x, y int, tile Tile) {
+	// Fall straight down
+	if tileMap[y+1][x] == TileEmpty {
+		tileMap[y+1][x] = tile
+		tileMap[y][x] = TileEmpty
 
-	handlePlayerMovement(w)
-
-	frameCounter++
-	if frameCounter%10 == 0 {
-		updatePhysics()
+		return
 	}
 
-	// Update explosion animation every frame (faster than physics)
-	if frameCounter%5 == 0 {
-		updateExplosions()
+	// Roll right
+	if canRollRight(x, y) {
+		tileMap[y+1][x+1] = tile
+		tileMap[y][x] = TileEmpty
+
+		return
 	}
 
-	// Update enemies every frame
-	updateEnemies()
+	// Roll left
+	if canRollLeft(x, y) {
+		tileMap[y+1][x-1] = tile
+		tileMap[y][x] = TileEmpty
 
-	for y := 0; y < GridHeight; y++ {
-		for x := 0; x < GridWidth; x++ {
+		return
+	}
+
+	// Handle collisions
+	handleObjectCollision(x, y, tile)
+}
+
+func canRollRight(x, y int) bool {
+	return (tileMap[y+1][x] == TileRock || tileMap[y+1][x] == TileGem) &&
+		tileMap[y][x+1] == TileEmpty &&
+		tileMap[y+1][x+1] == TileEmpty
+}
+
+func canRollLeft(x, y int) bool {
+	return (tileMap[y+1][x] == TileRock || tileMap[y+1][x] == TileGem) &&
+		tileMap[y][x-1] == TileEmpty &&
+		tileMap[y+1][x-1] == TileEmpty
+}
+
+func handleObjectCollision(x, y int, tile Tile) {
+	target := tileMap[y+1][x]
+
+	// FALL ON PLAYER
+	if target == TilePlayer {
+		if !playerHoldsFallingObject {
+			// Player dies
+			tileMap[y+1][x] = TileExplosion0
+			tileMap[y][x] = TileEmpty
+		}
+
+		return
+	}
+
+	// FALL ON ENEMY
+	if target == TileEnemy1 || target == TileEnemy2 || target == TileEnemy3 {
+		handleObjectFallOnEnemy(x, y, tile)
+	}
+}
+
+func handleObjectFallOnEnemy(x, y int, tile Tile) {
+	// Remove enemy from list
+	for i, enemy := range enemies {
+		if enemy.X == x && enemy.Y == y+1 {
+			enemies = append(enemies[:i], enemies[i+1:]...)
+			break
+		}
+	}
+
+	switch tile {
+	case TileRock:
+		// Rock falling on enemy: free surrounding blocks (except hard walls)
+		freeSurroundingBlocks(x, y+1)
+		tileMap[y+1][x] = TileEmpty
+		tileMap[y][x] = TileEmpty
+	case TileGem:
+		// Gem falling on enemy: kill enemy and create diamonds in surrounding blocks
+		createSurroundingDiamonds(x, y+1)
+		tileMap[y+1][x] = TileGem
+		tileMap[y][x] = TileEmpty
+	}
+}
+
+func renderGame(window draw.Window) {
+	for y := range GridHeight {
+		for x := range GridWidth {
 			tile := tileMap[y][x]
 			spriteIndex := TileSpriteIndex[tile]
 
@@ -436,18 +478,39 @@ func Update(w draw.Window) {
 			sx := (spriteIndex % TileCols) * TileSize
 			sy := (spriteIndex / TileCols) * TileSize
 
-			err := w.DrawImageFilePart(
+			err := window.DrawImageFilePart(
 				SpriteSheet,
 				sx, sy, TileSize, TileSize,
 				x*TileDrawSize, y*TileDrawSize, TileDrawSize, TileDrawSize,
 				0,
 			)
 			if err != nil {
-				w.DrawText("Failed to load sprite!", 10, 10, draw.Red)
+				window.DrawText("Failed to load sprite!", 10, 10, draw.Red)
 			}
 		}
 	}
 
 	text := currentLevel.Name + " - Gems: " + strconv.Itoa(gemCounter) + " / " + strconv.Itoa(currentLevel.GemTarget)
-	w.DrawText(text, 8, 8, draw.White)
+	window.DrawText(text, 8, 8, draw.White)
+}
+
+func Update(window draw.Window) {
+	window.BlurImages(true)
+
+	handlePlayerMovement(window)
+
+	frameCounter++
+	if frameCounter%10 == 0 {
+		updatePhysics()
+	}
+
+	// Update explosion animation every frame (faster than physics)
+	if frameCounter%5 == 0 {
+		updateExplosions()
+	}
+
+	// Update enemies every frame
+	updateEnemies()
+
+	renderGame(window)
 }

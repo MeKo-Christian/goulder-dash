@@ -3,6 +3,10 @@
 **A nutz Boulder Dash clone written in Go.**  
 Powered by [gonutz/prototype](https://github.com/gonutz/prototype) for pixel-perfect nostalgia!
 
+👉 **[Run the game in your browser](https://meko-christian.github.io/goulder-dash/)**
+
+> Requires a modern browser with WebAssembly support (most do).
+
 ---
 
 ## 🎮 About
