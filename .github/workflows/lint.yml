@@ -20,6 +20,11 @@ jobs:
           go-version: 1.23
           cache-dependency-path: "*/*.sum"
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev libglfw3-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev pkg-config
+
       - name: Download Go modules
         run: go mod download
 
