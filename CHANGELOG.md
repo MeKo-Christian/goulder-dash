@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.5.1](https://github.com/MeKo-Christian/goulder-dash/compare/v0.5.0...v0.5.1) (2025-07-06)
+
+
+### Bug Fixes
+
+* ci ([851f86e](https://github.com/MeKo-Christian/goulder-dash/commit/851f86e516b6b6d075e464a8b5b9fe7bd4b35ae8))
+* fixed a few bugs and added deployment for the gh-pages ([27913f3](https://github.com/MeKo-Christian/goulder-dash/commit/27913f3b0897d5ea30da9c57dffe912b351e0487))
+* formatting ([0258581](https://github.com/MeKo-Christian/goulder-dash/commit/02585818fb8ee37726308f4704b0b38a4ac60f65))
+* gh deploy action ([dfbbfd3](https://github.com/MeKo-Christian/goulder-dash/commit/dfbbfd3f0b7e9db56fa079e2ffc3c466009a1246))
+* linting issue ([ee4efbe](https://github.com/MeKo-Christian/goulder-dash/commit/ee4efbe36bec9b1e83d096781815c94d88634359))
+
 ## [0.5.0](https://github.com/MeKo-Christian/goulder-dash/compare/v0.4.0...v0.5.0) (2025-07-06)
 
 
