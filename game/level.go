@@ -19,7 +19,7 @@ func createGeneratedLevel(name string, seed int64, rockCount, gemCount, enemyCou
 	for y := 0; y < GridHeight; y++ {
 		for x := 0; x < GridWidth; x++ {
 			if y == 0 || y == GridHeight-1 || x == 0 || x == GridWidth-1 {
-				grid[y][x] = TileBrickWall
+				grid[y][x] = TileStoneWall
 			} else {
 				grid[y][x] = TileDirt
 			}
@@ -108,7 +108,7 @@ func placeEnemiesWithSpace(level *[GridHeight][GridWidth]Tile, r *rand.Rand, til
 			directions := [][]int{{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}, {-1, 0}}
 			for _, dir := range directions {
 				nx, ny := x+dir[0], y+dir[1]
-				if level[ny][nx] == TileDirt {
+				if level[ny][nx] != TileBrickWall {
 					level[ny][nx] = TileEmpty
 				}
 			}
