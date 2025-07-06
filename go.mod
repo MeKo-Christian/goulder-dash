@@ -1,6 +1,6 @@
 module github.com/meko-christian/goulder-dash
 
-go 1.24.0
+go 1.23.0
 
 require github.com/gonutz/prototype v1.6.0
 
