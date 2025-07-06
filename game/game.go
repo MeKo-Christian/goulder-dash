@@ -311,9 +311,14 @@ func updateExplosions() {
 func freeSurroundingBlocks(centerX, centerY int) {
 	// Define the 8 surrounding positions
 	offsets := [][]int{
-		{-1, -1}, {0, -1}, {1, -1},
-		{-1, 0}, {1, 0},
-		{-1, 1}, {0, 1}, {1, 1},
+		{-1, -1},
+		{0, -1},
+		{1, -1},
+		{-1, 0},
+		{1, 0},
+		{-1, 1},
+		{0, 1},
+		{1, 1},
 	}
 
 	for _, offset := range offsets {
@@ -335,9 +340,14 @@ func freeSurroundingBlocks(centerX, centerY int) {
 func createSurroundingDiamonds(centerX, centerY int) {
 	// Define the 8 surrounding positions
 	offsets := [][]int{
-		{-1, -1}, {0, -1}, {1, -1},
-		{-1, 0}, {1, 0},
-		{-1, 1}, {0, 1}, {1, 1},
+		{-1, -1},
+		{0, -1},
+		{1, -1},
+		{-1, 0},
+		{1, 0},
+		{-1, 1},
+		{0, 1},
+		{1, 1},
 	}
 
 	for _, offset := range offsets {
