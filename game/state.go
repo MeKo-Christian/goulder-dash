@@ -131,6 +131,7 @@ func moveEnemy(enemy *Enemy) {
 		// Player dies - clear enemy's old position and start explosion
 		tileMap[enemy.Y][enemy.X] = TileEmpty
 		tileMap[newY][newX] = TileExplosion0
+
 		return
 	}
 
