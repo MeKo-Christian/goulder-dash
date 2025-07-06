@@ -1,12 +1,24 @@
 <html>
 	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Goulder Dash</title>
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline';">
+		<meta property="og:url" content="https://meko-christian.github.io/goulder-dash/">
+		<meta property="og:title" content="Goulder Dash">
+		<meta property="og:description" content="A simple game made with Go and WebAssembly.">
+		<meta property="og:image" content="https://meko-christian.github.io/goulder-dash/assets/icon.png">
+		<link rel="icon" href="assets/icon.png" type="image/png">
 		<style>
 			body {
-				display: flex;
-				justify-content: center;
-				align-items: center;
+				display: grid;
+				place-items: center;
 				height: 100vh;
 				margin: 0;
+			}
+			canvas {
+				max-height: 100vh;
+  			max-width: 100vw;
 			}
 		</style>
 	</head>
