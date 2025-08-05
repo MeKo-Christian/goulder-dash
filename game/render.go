@@ -6,7 +6,10 @@ import (
 	"github.com/gonutz/prototype/draw"
 )
 
-func renderGame(window draw.Window) {
+func renderGame(window draw.Window, gsm *GameStateManager) {
+	tileMap := gsm.GetTileMap()
+	playerDirection := gsm.GetPlayerDirection()
+
 	for y := range GridHeight {
 		for x := range GridWidth {
 			tile := tileMap[y][x]
@@ -40,6 +43,8 @@ func renderGame(window draw.Window) {
 		}
 	}
 
+	currentLevel := gsm.GetCurrentLevel()
+	gemCounter := gsm.GetGemCounter()
 	text := currentLevel.Name + " - Gems: " + strconv.Itoa(gemCounter) + " / " + strconv.Itoa(currentLevel.GemTarget)
 	window.DrawText(text, 8, 8, draw.White)
 }

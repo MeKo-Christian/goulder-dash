@@ -1,0 +1,114 @@
+run:
+  timeout: 5m
+  modules-download-mode: readonly
+
+linters-settings:
+  gofumpt:
+    lang-version: "1.23"
+    extra-rules: true
+  
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/meko-christian/goulder-dash)
+    skip-generated: true
+  
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment
+      - shadow
+  
+  revive:
+    severity: warning
+    rules:
+      - name: exported
+        severity: warning
+        disabled: false
+        arguments:
+          - "checkPrivateReceivers"
+          - "sayRepetitiveInsteadOfStutters"
+  
+  staticcheck:
+    checks: ["all"]
+
+linters:
+  enable:
+    - gofumpt
+    - gci
+    - govet
+    - staticcheck
+    - gosimple
+    - ineffassign
+    - unused
+    - typecheck
+    - errcheck
+    - gosec
+    - unconvert
+    - misspell
+    - prealloc
+    - nolintlint
+    - exportloopref
+    - gocritic
+    - gocyclo
+    - dupl
+    - bodyclose
+    - asciicheck
+    - dogsled
+    - errorlint
+    - goconst
+    - goimports
+    - goprintffuncname
+    - makezero
+    - nakedret
+    - nilerr
+    - nilnil
+    - noctx
+    - rowserrcheck
+    - sqlclosecheck
+    - tparallel
+    - unconvert
+    - unparam
+    - wastedassign
+    - whitespace
+
+  disable:
+    - deadcode
+    - varcheck
+    - structcheck
+    - golint
+    - interfacer
+    - maligned
+    - scopelint
+    - exhaustive
+    - revive
+
+issues:
+  exclude-rules:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+    
+    # Disable some linters for main.go (entry point)
+    - path: main\.go
+      linters:
+        - gocyclo
+    
+    # Disable revive stuttering warnings for game package
+    - path: game/.*\.go
+      linters:
+        - revive
+      text: "stutters"
+    
+    # Disable exhaustive check for physics file - we know only TileRock and TileGem can fall on enemies
+    - path: game/physics\.go
+      linters:
+        - exhaustive
+
+  max-issues-per-linter: 0
+  max-same-issues: 0

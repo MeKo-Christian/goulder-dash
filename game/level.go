@@ -129,28 +129,3 @@ func clearSpaceAroundEnemy(level *[GridHeight][GridWidth]Tile, x, y int) {
 		}
 	}
 }
-
-func resetLevel(n int) {
-	currentLevel = levels[n]
-	tileMap = currentLevel.Grid
-	playerX, playerY = 1, 1
-	playerDirection = FacingDown
-	playerHoldsFallingObject = false
-	gemCounter = 0
-
-	// Initialize enemies from tilemap
-	enemies = nil
-
-	for y := range GridHeight {
-		for x := range GridWidth {
-			if tileMap[y][x] == TileEnemy1 {
-				enemies = append(enemies, Enemy{
-					X: x, Y: y,
-					Type:      TileEnemy1,
-					Direction: FacingRight,
-					MoveTimer: 8,
-				})
-			}
-		}
-	}
-}

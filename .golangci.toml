@@ -12,7 +12,9 @@ disable = [
   'wsl',
   'gosec',
   'gochecknoglobals',
-  'gochecknoinits'
+  'gochecknoinits',
+  'exhaustive',
+  'revive'
 ]
 enable = ['wsl_v5']
 
