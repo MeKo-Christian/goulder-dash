@@ -11,6 +11,11 @@ func init() {
 func Update(window draw.Window) {
 	window.BlurImages(true)
 
+	// Update player key repeat timer
+	if playerSystem != nil {
+		playerSystem.UpdateKeyRepeat()
+	}
+
 	handlePlayerMovement(window, gameStateManager)
 
 	gameStateManager.IncrementFrameCounter()

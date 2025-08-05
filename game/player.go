@@ -1,7 +1,10 @@
 package game
 
 type PlayerSystem struct {
-	gsm *GameStateManager
+	gsm               *GameStateManager
+	keyRepeatTimer    int
+	keyRepeatInterval int
+	lastKey           int // Track which key was last pressed
 }
 
 func NewPlayerSystem(gsm *GameStateManager) *PlayerSystem {
@@ -18,6 +21,29 @@ func (ps *PlayerSystem) GetDirection() Direction {
 
 func (ps *PlayerSystem) SetDirection(direction Direction) {
 	ps.gsm.SetPlayerDirection(direction)
+}
+
+func (ps *PlayerSystem) UpdateKeyRepeat() {
+	if ps.keyRepeatTimer > 0 {
+		ps.keyRepeatTimer--
+	}
+	if ps.keyRepeatInterval > 0 {
+		ps.keyRepeatInterval--
+	}
+}
+
+func (ps *PlayerSystem) StartKeyRepeat(keyCode int) {
+	ps.lastKey = keyCode
+	ps.keyRepeatTimer = 15 // Initial delay of 15 frames (~250ms at 60fps)
+	ps.keyRepeatInterval = 0
+}
+
+func (ps *PlayerSystem) CanRepeatKey(keyCode int) bool {
+	return ps.lastKey == keyCode && ps.keyRepeatTimer == 0 && ps.keyRepeatInterval == 0
+}
+
+func (ps *PlayerSystem) SetRepeatInterval() {
+	ps.keyRepeatInterval = 4 // 4 frames between repeats (~67ms at 60fps)
 }
 
 func (ps *PlayerSystem) Move(dx, dy int) bool {
