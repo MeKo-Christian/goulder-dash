@@ -64,7 +64,7 @@ func handleObjectCollision(gsm *GameStateManager, x, y int, tile Tile) {
 	if target == TilePlayer {
 		if !gsm.GetPlayerHoldsFallingObject() {
 			// Player dies
-			gsm.SetTileAt(x, y+1, TileExplosion0)
+			startExplosion(gsm, x, y+1)
 			gsm.SetTileAt(x, y, TileEmpty)
 		}
 

@@ -84,7 +84,7 @@ func moveEnemy(gsm *GameStateManager, enemy *Enemy) {
 	if newX == playerX && newY == playerY {
 		// Player dies - clear enemy's old position and start explosion
 		gsm.SetTileAt(enemy.X, enemy.Y, TileEmpty)
-		gsm.SetTileAt(newX, newY, TileExplosion0)
+		startExplosion(gsm, newX, newY)
 
 		return
 	}
@@ -100,18 +100,3 @@ func moveEnemy(gsm *GameStateManager, enemy *Enemy) {
 	gsm.SetTileAt(enemy.X, enemy.Y, enemy.Type)
 }
 
-func updateExplosions(gsm *GameStateManager) {
-	for y := range GridHeight {
-		for x := range GridWidth {
-			tile := gsm.GetTileAt(x, y)
-
-			if tile >= TileExplosion0 && tile < TileExplosion5 {
-				gsm.SetTileAt(x, y, tile+1) // next frame
-			} else if tile == TileExplosion5 {
-				// reset level
-				gsm.ResetCurrentLevel()
-				return // Exit after reset
-			}
-		}
-	}
-}

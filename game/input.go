@@ -2,18 +2,12 @@ package game
 
 import "github.com/gonutz/prototype/draw"
 
-var playerSystem *PlayerSystem
-
 const (
 	KeyCodeLeft  = 1
 	KeyCodeRight = 2
 	KeyCodeUp    = 3
 	KeyCodeDown  = 4
 )
-
-func init() {
-	// playerSystem will be initialized when gameStateManager is created
-}
 
 func handlePlayerMovement(window draw.Window, gsm *GameStateManager) {
 	// Initialize player system if not already done
