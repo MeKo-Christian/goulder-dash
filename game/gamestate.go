@@ -27,6 +27,7 @@ type GameState struct {
 	CurrentLevelIndex int
 	Enemies           []Enemy
 	Levels            []LevelData
+	PlayerKilled      bool
 }
 
 type GameStateManager struct {
@@ -57,12 +58,21 @@ func NewGameStateManager() *GameStateManager {
 		CurrentLevelIndex: 0,
 		Enemies:           []Enemy{},
 		Levels:            levels,
+		PlayerKilled:      false,
 	}
 
 	manager := &GameStateManager{state: gameState}
 	manager.initializeEnemies()
 
 	return manager
+}
+
+func (gsm *GameStateManager) IsPlayerKilled() bool {
+	return gsm.state.PlayerKilled
+}
+
+func (gsm *GameStateManager) SetPlayerKilled(isKilled bool) {
+	gsm.state.PlayerKilled = isKilled
 }
 
 func (gsm *GameStateManager) GetState() *GameState {
@@ -207,6 +217,7 @@ func (gsm *GameStateManager) resetLevel(levelIndex int) {
 	gsm.state.Player.Direction = FacingDown
 	gsm.state.Player.HoldsFallingObject = false
 	gsm.state.GemCounter = 0
+	gsm.state.PlayerKilled = false
 	gsm.initializeEnemies()
 }
 

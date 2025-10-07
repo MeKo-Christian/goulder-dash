@@ -83,8 +83,9 @@ func moveEnemy(gsm *GameStateManager, enemy *Enemy) {
 	playerX, playerY := gsm.GetPlayerPosition()
 	if newX == playerX && newY == playerY {
 		// Player dies - clear enemy's old position and start explosion
+		gsm.SetPlayerKilled(true)
 		gsm.SetTileAt(enemy.X, enemy.Y, TileEmpty)
-		startExplosion(gsm, newX, newY)
+		startExplosion(gsm, newX, newY, false)
 
 		return
 	}
