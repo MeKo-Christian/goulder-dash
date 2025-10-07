@@ -58,8 +58,6 @@ Sprites are 64×64 pixels, scaled to 32×32 during gameplay.
 
 ## 📦 Future Plans
 
-- 💥 Add explosions when crushed
-- 🤖 Add simple enemy AI
 - ⛏ Improve digging logic and particle effects
 - 🎶 Add sound effects and retro music
 - 🗺 Multiple levels and level transitions
