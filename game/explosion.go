@@ -1,12 +1,15 @@
 package game
 
-func startExplosion(gsm *GameStateManager, centerX, centerY int, areaEffect bool) {
+func startExplosion(gsm *GameStateManager, centerX, centerY int, areaEffect bool, fallingObject Tile) {
 	// Start the explosion at the center
 	gsm.SetTileAt(centerX, centerY, TileExplosion0)
 
 	if !areaEffect {
 		return
 	}
+
+	// Check if a gem/diamond fell on the enemy
+	isDiamondExplosion := fallingObject == TileGem
 
 	// Define the 8 surrounding positions
 	offsets := [][]int{
@@ -25,23 +28,43 @@ func startExplosion(gsm *GameStateManager, centerX, centerY int, areaEffect bool
 		}
 
 		tile := gsm.GetTileAt(x, y)
-		// Destroy surrounding dirt, gems, rocks, and enemies - all show explosion animation
-		if tile == TileDirt || tile == TileGem || tile == TileRock {
-			gsm.SetTileAt(x, y, TileExplosion0)
-		} else if tile == TileEnemy1 || tile == TileEnemy2 || tile == TileEnemy3 {
-			// Remove enemy from list
-			enemies := gsm.GetEnemies()
-			for i, enemy := range enemies {
-				if enemy.X == x && enemy.Y == y {
-					enemies = append(enemies[:i], enemies[i+1:]...)
-					break
+
+		// If diamond explosion, convert destructible tiles to diamonds
+		if isDiamondExplosion {
+			// Don't convert walls/borders, but convert everything else
+			if tile != TileBrickWall && tile != TileStoneWall {
+				// Remove enemies from the list if present
+				if tile == TileEnemy1 || tile == TileEnemy2 || tile == TileEnemy3 {
+					enemies := gsm.GetEnemies()
+					for i, enemy := range enemies {
+						if enemy.X == x && enemy.Y == y {
+							enemies = append(enemies[:i], enemies[i+1:]...)
+							break
+						}
+					}
+					gsm.SetEnemies(enemies)
 				}
+				gsm.SetTileAt(x, y, TileGem)
 			}
-			gsm.SetEnemies(enemies)
-			gsm.SetTileAt(x, y, TileExplosion0)
-		} else if tile == TileEmpty {
-			// Even empty tiles show explosion animation
-			gsm.SetTileAt(x, y, TileExplosion0)
+		} else {
+			// Regular explosion - destroy surrounding tiles and show explosion animation
+			if tile == TileDirt || tile == TileGem || tile == TileRock {
+				gsm.SetTileAt(x, y, TileExplosion0)
+			} else if tile == TileEnemy1 || tile == TileEnemy2 || tile == TileEnemy3 {
+				// Remove enemy from list
+				enemies := gsm.GetEnemies()
+				for i, enemy := range enemies {
+					if enemy.X == x && enemy.Y == y {
+						enemies = append(enemies[:i], enemies[i+1:]...)
+						break
+					}
+				}
+				gsm.SetEnemies(enemies)
+				gsm.SetTileAt(x, y, TileExplosion0)
+			} else if tile == TileEmpty {
+				// Even empty tiles show explosion animation
+				gsm.SetTileAt(x, y, TileExplosion0)
+			}
 		}
 	}
 }

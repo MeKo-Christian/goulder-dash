@@ -15,17 +15,17 @@ This document outlines the planned features and improvements for Goulder Dash. I
 #### Enemy Death Explosion (Area of Effect)
 
 - [x] **Enemy Crushing Logic**: Implement collision detection to determine when an enemy is crushed by a falling rock/stone or gem/diamond.
-- [ ] **Multi-Tile Explosion Animation**: When an enemy is crushed, trigger explosion animation on:
+- [x] **Multi-Tile Explosion Animation**: When an enemy is crushed, trigger explosion animation on:
   - [x] The enemy's tile (center of explosion)
-  - [ ] All 8 adjacent tiles (orthogonal and diagonal neighbors) - currently only destroying but not showing explosion animation
-- [ ] **Area of Effect Damage**: Enemy explosions should destroy elements in adjacent tiles:
+  - [x] All 8 adjacent tiles (orthogonal and diagonal neighbors)
+- [x] **Area of Effect Damage**: Enemy explosions should destroy elements in adjacent tiles:
   - [x] Destroy dirt tiles
   - [x] Destroy gems
-  - [ ] Destroy stones/rocks
+  - [x] Destroy stones/rocks
   - [x] Potentially destroy other enemies in blast radius
   - [x] Leave walls/borders intact
-  - [ ] All affected tiles show explosion animation simultaneously
-- [ ] **Diamond Conversion**: When a diamond/gem falls onto an enemy, the enemy explodes and all 8 adjacent tiles are converted to diamonds (instead of showing explosion damage)
+  - [x] All affected tiles show explosion animation simultaneously
+- [x] **Diamond Conversion**: When a diamond/gem falls onto an enemy, the enemy explodes and all 8 adjacent tiles are converted to diamonds (instead of showing explosion damage)
 
 ### 1.2. Simple Enemy AI
 - [ ] **Basic Movement Patterns**: Implement simple movement for enemies. For example, an enemy could patrol a horizontal or vertical path, reversing direction when hitting a wall.

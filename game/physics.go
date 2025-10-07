@@ -65,7 +65,7 @@ func handleObjectCollision(gsm *GameStateManager, x, y int, tile Tile) {
 		if !gsm.GetPlayerHoldsFallingObject() {
 			// Player dies
 			gsm.SetPlayerKilled(true)
-			startExplosion(gsm, x, y+1, false)
+			startExplosion(gsm, x, y+1, false, tile)
 			gsm.SetTileAt(x, y, TileEmpty)
 		}
 
@@ -91,6 +91,7 @@ func handleObjectFallOnEnemy(gsm *GameStateManager, x, y int, tile Tile) {
 	gsm.SetEnemies(enemies)
 
 	// An enemy was crushed, trigger an area-effect explosion.
-	startExplosion(gsm, x, y+1, true)
+	// Pass the falling object type so we know if it's a diamond explosion
+	startExplosion(gsm, x, y+1, true, tile)
 	gsm.SetTileAt(x, y, TileEmpty)
 }
