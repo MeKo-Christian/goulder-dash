@@ -1,6 +1,6 @@
 package game
 
-func updatePhysics(gsm *GameStateManager) {
+func UpdatePhysics(gsm *GameStateManager) {
 	// Process bottom-up
 	for y := GridHeight - 2; y >= 1; y-- {
 		for x := 1; x < GridWidth-1; x++ {

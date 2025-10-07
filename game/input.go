@@ -20,56 +20,42 @@ func handlePlayerMovement(window draw.Window, gsm *GameStateManager) {
 		return
 	}
 
+	type keyAction struct {
+		key  draw.Key
+		dx   int
+		dy   int
+		dir  Direction
+		code int
+	}
+
+	actions := []keyAction{
+		{draw.KeyLeft, -1, 0, FacingLeft, KeyCodeLeft},
+		{draw.KeyRight, 1, 0, FacingRight, KeyCodeRight},
+		{draw.KeyUp, 0, -1, FacingUp, KeyCodeUp},
+		{draw.KeyDown, 0, 1, FacingDown, KeyCodeDown},
+	}
+
 	// Check for initial key presses (immediate response)
-	if window.WasKeyPressed(draw.KeyLeft) {
-		playerSystem.SetDirection(FacingLeft)
-		if playerSystem.Move(-1, 0) {
-			playerSystem.StartKeyRepeat(KeyCodeLeft)
+	for _, a := range actions {
+		if window.WasKeyPressed(a.key) {
+			playerSystem.SetDirection(a.dir)
+
+			if playerSystem.Move(a.dx, a.dy) {
+				playerSystem.StartKeyRepeat(a.code)
+			}
+
+			return
 		}
-		return
-	}
-	if window.WasKeyPressed(draw.KeyRight) {
-		playerSystem.SetDirection(FacingRight)
-		if playerSystem.Move(1, 0) {
-			playerSystem.StartKeyRepeat(KeyCodeRight)
-		}
-		return
-	}
-	if window.WasKeyPressed(draw.KeyUp) {
-		playerSystem.SetDirection(FacingUp)
-		if playerSystem.Move(0, -1) {
-			playerSystem.StartKeyRepeat(KeyCodeUp)
-		}
-		return
-	}
-	if window.WasKeyPressed(draw.KeyDown) {
-		playerSystem.SetDirection(FacingDown)
-		if playerSystem.Move(0, 1) {
-			playerSystem.StartKeyRepeat(KeyCodeDown)
-		}
-		return
 	}
 
 	// Check for key repeat (after initial delay)
-	if window.IsKeyDown(draw.KeyLeft) && playerSystem.CanRepeatKey(KeyCodeLeft) {
-		playerSystem.SetDirection(FacingLeft)
-		if playerSystem.Move(-1, 0) {
-			playerSystem.SetRepeatInterval()
-		}
-	} else if window.IsKeyDown(draw.KeyRight) && playerSystem.CanRepeatKey(KeyCodeRight) {
-		playerSystem.SetDirection(FacingRight)
-		if playerSystem.Move(1, 0) {
-			playerSystem.SetRepeatInterval()
-		}
-	} else if window.IsKeyDown(draw.KeyUp) && playerSystem.CanRepeatKey(KeyCodeUp) {
-		playerSystem.SetDirection(FacingUp)
-		if playerSystem.Move(0, -1) {
-			playerSystem.SetRepeatInterval()
-		}
-	} else if window.IsKeyDown(draw.KeyDown) && playerSystem.CanRepeatKey(KeyCodeDown) {
-		playerSystem.SetDirection(FacingDown)
-		if playerSystem.Move(0, 1) {
-			playerSystem.SetRepeatInterval()
+	for _, a := range actions {
+		if window.IsKeyDown(a.key) && playerSystem.CanRepeatKey(a.code) {
+			playerSystem.SetDirection(a.dir)
+
+			if playerSystem.Move(a.dx, a.dy) {
+				playerSystem.SetRepeatInterval()
+			}
 		}
 	}
 }

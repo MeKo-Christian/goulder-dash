@@ -40,7 +40,7 @@ func turnClockwise(dir Direction) Direction {
 	return FacingRight
 }
 
-func updateEnemies(gsm *GameStateManager) {
+func UpdateEnemies(gsm *GameStateManager) {
 	enemies := gsm.GetEnemies()
 	for i := range enemies {
 		enemy := &enemies[i]
@@ -100,4 +100,3 @@ func moveEnemy(gsm *GameStateManager, enemy *Enemy) {
 	// Place enemy in new position
 	gsm.SetTileAt(enemy.X, enemy.Y, enemy.Type)
 }
-

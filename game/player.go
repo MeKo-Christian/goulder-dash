@@ -8,7 +8,12 @@ type PlayerSystem struct {
 }
 
 func NewPlayerSystem(gsm *GameStateManager) *PlayerSystem {
-	return &PlayerSystem{gsm: gsm}
+	return &PlayerSystem{
+		gsm:               gsm,
+		keyRepeatTimer:    0,
+		keyRepeatInterval: 0,
+		lastKey:           0,
+	}
 }
 
 func (ps *PlayerSystem) GetPosition() (int, int) {
@@ -27,6 +32,7 @@ func (ps *PlayerSystem) UpdateKeyRepeat() {
 	if ps.keyRepeatTimer > 0 {
 		ps.keyRepeatTimer--
 	}
+
 	if ps.keyRepeatInterval > 0 {
 		ps.keyRepeatInterval--
 	}

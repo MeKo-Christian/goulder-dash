@@ -13,7 +13,7 @@ func updateSystems(gsm *GameStateManager) {
 
 	// Update physics every 10 frames
 	if gsm.GetFrameCounter()%10 == 0 {
-		updatePhysics(gsm)
+		UpdatePhysics(gsm)
 	}
 
 	// Update explosion animation every 5 frames
@@ -22,5 +22,5 @@ func updateSystems(gsm *GameStateManager) {
 	}
 
 	// Update enemies every frame
-	updateEnemies(gsm)
+	UpdateEnemies(gsm)
 }
