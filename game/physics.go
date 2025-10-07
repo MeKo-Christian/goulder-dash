@@ -1,6 +1,6 @@
 package game
 
-func updatePhysics(gsm *GameStateManager) {
+func UpdatePhysics(gsm *GameStateManager) {
 	// Process bottom-up
 	for y := GridHeight - 2; y >= 1; y-- {
 		for x := 1; x < GridWidth-1; x++ {
@@ -64,7 +64,8 @@ func handleObjectCollision(gsm *GameStateManager, x, y int, tile Tile) {
 	if target == TilePlayer {
 		if !gsm.GetPlayerHoldsFallingObject() {
 			// Player dies
-			gsm.SetTileAt(x, y+1, TileExplosion0)
+			gsm.SetPlayerKilled(true)
+			startExplosion(gsm, x, y+1, false, tile)
 			gsm.SetTileAt(x, y, TileEmpty)
 		}
 
@@ -89,78 +90,8 @@ func handleObjectFallOnEnemy(gsm *GameStateManager, x, y int, tile Tile) {
 
 	gsm.SetEnemies(enemies)
 
-	switch tile {
-	case TileRock:
-		// Rock falling on enemy: free surrounding blocks (except hard walls)
-		freeSurroundingBlocks(gsm, x, y+1)
-		gsm.SetTileAt(x, y+1, TileEmpty)
-		gsm.SetTileAt(x, y, TileEmpty)
-	case TileGem:
-		// Gem falling on enemy: kill enemy and create diamonds in surrounding blocks
-		createSurroundingDiamonds(gsm, x, y+1)
-		gsm.SetTileAt(x, y+1, TileGem)
-		gsm.SetTileAt(x, y, TileEmpty)
-	default:
-		// Handle any other tile types that shouldn't fall on enemies
-		gsm.SetTileAt(x, y+1, TileEmpty)
-		gsm.SetTileAt(x, y, TileEmpty)
-	}
-}
-
-func freeSurroundingBlocks(gsm *GameStateManager, centerX, centerY int) {
-	// Define the 8 surrounding positions
-	offsets := [][]int{
-		{-1, -1},
-		{0, -1},
-		{1, -1},
-		{-1, 0},
-		{1, 0},
-		{-1, 1},
-		{0, 1},
-		{1, 1},
-	}
-
-	for _, offset := range offsets {
-		x := centerX + offset[0]
-		y := centerY + offset[1]
-
-		// Check bounds
-		if x < 0 || x >= GridWidth || y < 0 || y >= GridHeight {
-			continue
-		}
-
-		// Free the block (except for hard walls)
-		if gsm.GetTileAt(x, y) != TileStoneWall {
-			gsm.SetTileAt(x, y, TileEmpty)
-		}
-	}
-}
-
-func createSurroundingDiamonds(gsm *GameStateManager, centerX, centerY int) {
-	// Define the 8 surrounding positions
-	offsets := [][]int{
-		{-1, -1},
-		{0, -1},
-		{1, -1},
-		{-1, 0},
-		{1, 0},
-		{-1, 1},
-		{0, 1},
-		{1, 1},
-	}
-
-	for _, offset := range offsets {
-		x := centerX + offset[0]
-		y := centerY + offset[1]
-
-		// Check bounds
-		if x < 0 || x >= GridWidth || y < 0 || y >= GridHeight {
-			continue
-		}
-
-		// Create diamonds (except for hard walls)
-		if gsm.GetTileAt(x, y) != TileStoneWall {
-			gsm.SetTileAt(x, y, TileGem)
-		}
-	}
+	// An enemy was crushed, trigger an area-effect explosion.
+	// Pass the falling object type so we know if it's a diamond explosion
+	startExplosion(gsm, x, y+1, true, tile)
+	gsm.SetTileAt(x, y, TileEmpty)
 }

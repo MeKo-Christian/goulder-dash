@@ -40,7 +40,7 @@ func turnClockwise(dir Direction) Direction {
 	return FacingRight
 }
 
-func updateEnemies(gsm *GameStateManager) {
+func UpdateEnemies(gsm *GameStateManager) {
 	enemies := gsm.GetEnemies()
 	for i := range enemies {
 		enemy := &enemies[i]
@@ -83,8 +83,9 @@ func moveEnemy(gsm *GameStateManager, enemy *Enemy) {
 	playerX, playerY := gsm.GetPlayerPosition()
 	if newX == playerX && newY == playerY {
 		// Player dies - clear enemy's old position and start explosion
+		gsm.SetPlayerKilled(true)
 		gsm.SetTileAt(enemy.X, enemy.Y, TileEmpty)
-		gsm.SetTileAt(newX, newY, TileExplosion0)
+		startExplosion(gsm, newX, newY, false, TileEmpty)
 
 		return
 	}
@@ -98,20 +99,4 @@ func moveEnemy(gsm *GameStateManager, enemy *Enemy) {
 
 	// Place enemy in new position
 	gsm.SetTileAt(enemy.X, enemy.Y, enemy.Type)
-}
-
-func updateExplosions(gsm *GameStateManager) {
-	for y := range GridHeight {
-		for x := range GridWidth {
-			tile := gsm.GetTileAt(x, y)
-
-			if tile >= TileExplosion0 && tile < TileExplosion5 {
-				gsm.SetTileAt(x, y, tile+1) // next frame
-			} else if tile == TileExplosion5 {
-				// reset level
-				gsm.ResetCurrentLevel()
-				return // Exit after reset
-			}
-		}
-	}
 }
