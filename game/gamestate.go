@@ -146,6 +146,16 @@ func (gsm *GameStateManager) SetEnemies(enemies []Enemy) {
 	gsm.state.Enemies = enemies
 }
 
+func (gsm *GameStateManager) SetLevel(level [][]Tile) {
+	var newTileMap [GridHeight][GridWidth]Tile
+	for y := 0; y < GridHeight; y++ {
+		for x := 0; x < GridWidth; x++ {
+			newTileMap[y][x] = level[y][x]
+		}
+	}
+	gsm.state.TileMap = newTileMap
+}
+
 func (gsm *GameStateManager) GetTileMap() *[GridHeight][GridWidth]Tile {
 	return &gsm.state.TileMap
 }
