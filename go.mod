@@ -1,4 +1,4 @@
-module github.com/meko-christian/goulder-dash
+module github.com/cwbudde/goulder-dash
 
 go 1.23.0
 

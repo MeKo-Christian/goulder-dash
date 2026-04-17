@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gonutz/prototype/draw"
-	"github.com/meko-christian/goulder-dash/game"
+	"github.com/cwbudde/goulder-dash/game"
 )
 
 func main() {

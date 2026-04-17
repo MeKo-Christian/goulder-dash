@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/cucumber/godog"
-	"github.com/meko-christian/goulder-dash/game"
+	"github.com/cwbudde/goulder-dash/game"
 )
 
 var (

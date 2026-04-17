@@ -110,3 +110,6 @@ security:
 docs:
     godoc -http=:6060
     @echo "Documentation server running at http://localhost:6060"
+fix:
+    just lint-fix
+    just fmt
