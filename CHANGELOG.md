@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.2](https://github.com/CWBudde/goulder-dash/compare/v0.5.1...v0.5.2) (2026-04-18)
+
+
+### Bug Fixes
+
+* keyboard issues solved ([4d284c2](https://github.com/CWBudde/goulder-dash/commit/4d284c2e47f6e670532ff1ff2c148d643cf908f4))
+* updated README.md ([f253f63](https://github.com/CWBudde/goulder-dash/commit/f253f63f4353b93bcc9a35d423356766854e2c33))
+
 ## [0.5.1](https://github.com/MeKo-Christian/goulder-dash/compare/v0.5.0...v0.5.1) (2025-07-06)
 
 
