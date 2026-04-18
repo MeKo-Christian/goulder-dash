@@ -1,70 +1,26 @@
+version: "2"
 run:
-  timeout: 5m
   modules-download-mode: readonly
-
-linters-settings:
-  gofumpt:
-    lang-version: "1.23"
-    extra-rules: true
-  
-  gci:
-    sections:
-      - standard
-      - default
-      - prefix(github.com/meko-christian/goulder-dash)
-    skip-generated: true
-  
-  govet:
-    enable-all: true
-    disable:
-      - fieldalignment
-      - shadow
-  
-  revive:
-    severity: warning
-    rules:
-      - name: exported
-        severity: warning
-        disabled: false
-        arguments:
-          - "checkPrivateReceivers"
-          - "sayRepetitiveInsteadOfStutters"
-  
-  staticcheck:
-    checks: ["all"]
-
 linters:
   enable:
-    - gofumpt
-    - gci
-    - govet
-    - staticcheck
-    - gosimple
-    - ineffassign
-    - unused
-    - typecheck
-    - errcheck
-    - gosec
-    - unconvert
-    - misspell
-    - prealloc
-    - nolintlint
-    - exportloopref
-    - gocritic
-    - gocyclo
-    - dupl
-    - bodyclose
     - asciicheck
+    - bodyclose
     - dogsled
+    - dupl
     - errorlint
     - goconst
-    - goimports
+    - gocritic
+    - gocyclo
     - goprintffuncname
+    - gosec
     - makezero
+    - misspell
     - nakedret
     - nilerr
     - nilnil
     - noctx
+    - nolintlint
+    - prealloc
     - rowserrcheck
     - sqlclosecheck
     - tparallel
@@ -72,43 +28,79 @@ linters:
     - unparam
     - wastedassign
     - whitespace
-
-  disable:
-    - deadcode
-    - varcheck
-    - structcheck
-    - golint
-    - interfacer
-    - maligned
-    - scopelint
-    - exhaustive
     - revive
-
+  disable:
+    - exhaustive
+  settings:
+    govet:
+      disable:
+        - fieldalignment
+        - shadow
+      enable-all: true
+    revive:
+      severity: warning
+      rules:
+        - name: exported
+          arguments:
+            - checkPrivateReceivers
+            - sayRepetitiveInsteadOfStutters
+          severity: warning
+          disabled: false
+        - name: file-length-limit
+          arguments:
+            - max: 1500
+              skip-comments: false
+              skip-blank-lines: false
+    staticcheck:
+      checks:
+        - all
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - dupl
+          - errcheck
+          - gocyclo
+          - gosec
+        path: _test\.go
+      - linters:
+          - gocyclo
+        path: main\.go
+      - linters:
+          - revive
+        path: game/.*\.go
+        text: stutters
+      - linters:
+          - exhaustive
+        path: game/physics\.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 issues:
-  exclude-rules:
-    # Exclude some linters from running on tests files
-    - path: _test\.go
-      linters:
-        - gocyclo
-        - errcheck
-        - dupl
-        - gosec
-    
-    # Disable some linters for main.go (entry point)
-    - path: main\.go
-      linters:
-        - gocyclo
-    
-    # Disable revive stuttering warnings for game package
-    - path: game/.*\.go
-      linters:
-        - revive
-      text: "stutters"
-    
-    # Disable exhaustive check for physics file - we know only TileRock and TileGem can fall on enemies
-    - path: game/physics\.go
-      linters:
-        - exhaustive
-
   max-issues-per-linter: 0
   max-same-issues: 0
+formatters:
+  enable:
+    - gci
+    - gofumpt
+    - goimports
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/meko-christian/goulder-dash)
+    gofumpt:
+      extra-rules: true
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
